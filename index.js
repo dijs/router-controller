@@ -4,13 +4,17 @@ const isOnline = require('is-online');
 const http = require('http');
 
 function sendReliabilityScore(score) {
-  http
-    .get(`${process.env.SERVER}/online/${score}`, resp => {
-      // Nothing
-    })
-    .on('error', err => {
-      console.log('Error Sending Status: ' + err.message);
-    });
+  try {
+    http
+      .get(`${process.env.SERVER}/online/${score}`, resp => {
+        // Nothing
+      })
+      .on('error', err => {
+        console.log('Error Sending Status: ' + err.message);
+      });
+  } catch (e) {
+    console.log('Error Sending Status (outer): ' + e.message);
+  }
 }
 
 function rebootRouter() {
