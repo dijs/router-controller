@@ -36,7 +36,7 @@ function rebootRouter() {
 }
 
 // in mins
-const ONLINE_WAIT = 5;
+const ONLINE_WAIT = 3;
 const OFFLINE_WAIT = 2;
 
 let reliabilityChecks = 1;
@@ -46,35 +46,39 @@ let wasOffline = false;
 let offlineConsecutiveCount = 0;
 
 function checkInternet() {
-  isOnline().then(online => {
-    // Reset reliability every 24 hours
-    if (reliabilityChecks >= (60 * 24) / ONLINE_WAIT) {
-      reliabilityChecks = 1;
-      reliabilityPasses = 1;
-    }
-    reliabilityChecks++;
-    if (online) {
-      console.log('We are online');
-      reliabilityPasses++;
-      wasOffline = false;
-      offlineConsecutiveCount = 0;
-      const score = Math.round((reliabilityPasses / reliabilityChecks) * 100);
-      sendReliabilityScore(score);
-      console.log('Reliability Score', score);
-      setTimeout(checkInternet, ONLINE_WAIT * 60 * 1000);
-    } else {
-      console.log('Ahhh not connected');
-      if (wasOffline) {
-        offlineConsecutiveCount++;
+  isOnline()
+    .then(online => {
+      // Reset reliability every 24 hours
+      if (reliabilityChecks >= (60 * 24) / ONLINE_WAIT) {
+        reliabilityChecks = 1;
+        reliabilityPasses = 1;
       }
-      wasOffline = true;
-      if (offlineConsecutiveCount >= 2) {
-        offlineConsecutiveCount = 1;
-        rebootRouter();
+      reliabilityChecks++;
+      if (online) {
+        console.log('We are online');
+        reliabilityPasses++;
+        wasOffline = false;
+        offlineConsecutiveCount = 0;
+        const score = Math.round((reliabilityPasses / reliabilityChecks) * 100);
+        sendReliabilityScore(score);
+        console.log('Reliability Score', score);
+        setTimeout(checkInternet, ONLINE_WAIT * 60 * 1000);
+      } else {
+        console.log('Ahhh not connected');
+        if (wasOffline) {
+          offlineConsecutiveCount++;
+        }
+        wasOffline = true;
+        if (offlineConsecutiveCount >= 2) {
+          offlineConsecutiveCount = 1;
+          rebootRouter();
+        }
+        setTimeout(checkInternet, OFFLINE_WAIT * 60 * 1000);
       }
-      setTimeout(checkInternet, OFFLINE_WAIT * 60 * 1000);
-    }
-  });
+    })
+    .catch(e => {
+      console.log('Could not verify connection', e.message);
+    });
 }
 
 checkInternet();
