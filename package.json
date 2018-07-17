@@ -1,0 +1,16 @@
+{
+  "name": "router-controller",
+  "version": "0.0.1",
+  "description": "Watches internet and restarts router if offline",
+  "main": "index.js",
+  "author": "Richard van der Dys",
+  "license": "MIT",
+  "dependencies": {
+    "dotenv": "^6.0.0",
+    "is-online": "^7.0.0",
+    "telnet-client": "^0.15.8"
+  },
+  "devDependencies": {
+    "prettier": "^1.13.7"
+  }
+}
